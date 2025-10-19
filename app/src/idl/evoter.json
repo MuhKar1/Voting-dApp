@@ -1,0 +1,443 @@
+{
+  "address": "At2NcESoMB48ULsY7XPQFHAdjR1B5kEzfkP2Hk7WKrfD",
+  "metadata": {
+    "name": "evoter",
+    "version": "0.1.0",
+    "spec": "0.1.0",
+    "description": "Created with Anchor"
+  },
+  "instructions": [
+    {
+      "name": "close_poll",
+      "discriminator": [
+        139,
+        213,
+        162,
+        65,
+        172,
+        150,
+        123,
+        67
+      ],
+      "accounts": [
+        {
+          "name": "poll",
+          "writable": true
+        },
+        {
+          "name": "creator",
+          "writable": true,
+          "signer": true
+        }
+      ],
+      "args": []
+    },
+    {
+      "name": "create_poll",
+      "discriminator": [
+        182,
+        171,
+        112,
+        238,
+        6,
+        219,
+        14,
+        110
+      ],
+      "accounts": [
+        {
+          "name": "poll",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  112,
+                  111,
+                  108,
+                  108
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "creator"
+              },
+              {
+                "kind": "arg",
+                "path": "poll_id"
+              }
+            ]
+          }
+        },
+        {
+          "name": "creator",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        },
+        {
+          "name": "rent",
+          "address": "SysvarRent111111111111111111111111111111111"
+        }
+      ],
+      "args": [
+        {
+          "name": "poll_id",
+          "type": "u64"
+        },
+        {
+          "name": "question",
+          "type": "string"
+        },
+        {
+          "name": "options",
+          "type": {
+            "vec": "string"
+          }
+        }
+      ]
+    },
+    {
+      "name": "vote_poll",
+      "discriminator": [
+        154,
+        219,
+        48,
+        148,
+        149,
+        7,
+        153,
+        194
+      ],
+      "accounts": [
+        {
+          "name": "poll",
+          "docs": [
+            "Poll must be mutable so we can update votes.",
+            "VoteRecord is a PDA (initialized here) used to prevent double voting:",
+            "seeds = [\"vote\", poll.key(), voter.key()]"
+          ],
+          "writable": true
+        },
+        {
+          "name": "vote_record",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  118,
+                  111,
+                  116,
+                  101
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "poll"
+              },
+              {
+                "kind": "account",
+                "path": "voter"
+              }
+            ]
+          }
+        },
+        {
+          "name": "voter",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "creator",
+          "relations": [
+            "poll"
+          ]
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        },
+        {
+          "name": "rent",
+          "address": "SysvarRent111111111111111111111111111111111"
+        }
+      ],
+      "args": [
+        {
+          "name": "option_index",
+          "type": "u8"
+        }
+      ]
+    }
+  ],
+  "accounts": [
+    {
+      "name": "PollAccount",
+      "discriminator": [
+        109,
+        254,
+        117,
+        41,
+        232,
+        74,
+        172,
+        45
+      ]
+    },
+    {
+      "name": "VoteRecord",
+      "discriminator": [
+        112,
+        9,
+        123,
+        165,
+        234,
+        9,
+        157,
+        167
+      ]
+    }
+  ],
+  "events": [
+    {
+      "name": "PollClosed",
+      "discriminator": [
+        241,
+        239,
+        82,
+        94,
+        108,
+        20,
+        76,
+        249
+      ]
+    },
+    {
+      "name": "PollCreated",
+      "discriminator": [
+        137,
+        85,
+        250,
+        148,
+        2,
+        9,
+        178,
+        39
+      ]
+    },
+    {
+      "name": "Voted",
+      "discriminator": [
+        189,
+        74,
+        101,
+        127,
+        109,
+        214,
+        95,
+        130
+      ]
+    }
+  ],
+  "errors": [
+    {
+      "code": 6000,
+      "name": "NotEnoughOptions",
+      "msg": "Not enough options provided (minimum 2)."
+    },
+    {
+      "code": 6001,
+      "name": "TooManyOptions",
+      "msg": "Too many options provided."
+    },
+    {
+      "code": 6002,
+      "name": "QuestionTooLong",
+      "msg": "Question string too long."
+    },
+    {
+      "code": 6003,
+      "name": "OptionTooLong",
+      "msg": "Option string too long."
+    },
+    {
+      "code": 6004,
+      "name": "EmptyOption",
+      "msg": "Empty option is not allowed."
+    },
+    {
+      "code": 6005,
+      "name": "PollClosed",
+      "msg": "Poll is already closed."
+    },
+    {
+      "code": 6006,
+      "name": "PollAlreadyClosed",
+      "msg": "Poll is already closed or not active."
+    },
+    {
+      "code": 6007,
+      "name": "InvalidOption",
+      "msg": "Invalid option index."
+    },
+    {
+      "code": 6008,
+      "name": "Unauthorized",
+      "msg": "Only the poll creator can close this poll."
+    },
+    {
+      "code": 6009,
+      "name": "VoteOverflow",
+      "msg": "Vote count overflow."
+    },
+    {
+      "code": 6010,
+      "name": "AlreadyVoted",
+      "msg": "User has already voted on this poll."
+    }
+  ],
+  "types": [
+    {
+      "name": "PollAccount",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "creator",
+            "type": "pubkey"
+          },
+          {
+            "name": "poll_id",
+            "type": "u64"
+          },
+          {
+            "name": "question",
+            "type": "string"
+          },
+          {
+            "name": "options",
+            "type": {
+              "vec": "string"
+            }
+          },
+          {
+            "name": "votes",
+            "type": {
+              "vec": "u64"
+            }
+          },
+          {
+            "name": "is_active",
+            "type": "bool"
+          },
+          {
+            "name": "bump",
+            "type": "u8"
+          }
+        ]
+      }
+    },
+    {
+      "name": "PollClosed",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "poll",
+            "type": "pubkey"
+          },
+          {
+            "name": "creator",
+            "type": "pubkey"
+          },
+          {
+            "name": "ts",
+            "type": "i64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "PollCreated",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "poll",
+            "type": "pubkey"
+          },
+          {
+            "name": "creator",
+            "type": "pubkey"
+          },
+          {
+            "name": "poll_id",
+            "type": "u64"
+          },
+          {
+            "name": "option_count",
+            "type": "u8"
+          },
+          {
+            "name": "ts",
+            "type": "i64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "VoteRecord",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "voter",
+            "type": "pubkey"
+          },
+          {
+            "name": "poll",
+            "type": "pubkey"
+          },
+          {
+            "name": "option_index",
+            "type": "u8"
+          },
+          {
+            "name": "bump",
+            "type": "u8"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Voted",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "poll",
+            "type": "pubkey"
+          },
+          {
+            "name": "voter",
+            "type": "pubkey"
+          },
+          {
+            "name": "option_index",
+            "type": "u8"
+          },
+          {
+            "name": "ts",
+            "type": "i64"
+          }
+        ]
+      }
+    }
+  ]
+}
