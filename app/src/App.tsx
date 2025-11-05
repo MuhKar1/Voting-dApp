@@ -36,9 +36,6 @@ const AppContent: React.FC = () => {
                 </span>
               </span>
               <span className="font-semibold text-green-300">Wallet Connected</span>
-              <code className="bg-green-900/50 text-green-300 border border-green-600 rounded px-2 py-0.5 text-xs">
-                {truncateAddress(wallet.publicKey.toBase58())}
-              </code>
             </div>
           ) : (
             <div className="flex items-center gap-2 text-red-400 bg-gray-800/80 backdrop-blur px-3 py-2 rounded-md border border-red-600 shadow-sm">
