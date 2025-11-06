@@ -220,7 +220,15 @@ export const CreatePollForm: React.FC<{ onPollCreated?: () => void }> = ({ onPol
       
       // Enhanced error parsing for common Anchor/Solana errors
       // Provides user-friendly error messages instead of technical errors
-      let errorMsg = parseAnchorError(err); // Use custom error parser
+      let errorMsg = 'Failed to create poll';
+      try {
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
+        errorMsg = await parseAnchorError(err) || err.message || errorMsg;
+      } catch (pe) {
+        errorMsg = err.message || errorMsg;
+      }
+
       if (err.message?.includes('0x1')) { // Insufficient funds error code
         errorMsg = 'Insufficient funds for account creation. Try using Dev Airdrop first.'; // Clear guidance
       } else if (err.message?.includes('0x0')) { // Account creation error
@@ -230,7 +238,7 @@ export const CreatePollForm: React.FC<{ onPollCreated?: () => void }> = ({ onPol
       } else if (err.message?.includes('already been processed')) { // Duplicate transaction
         errorMsg = 'This transaction was already submitted. Please wait for confirmation.'; // Wait message
       }
-      
+
       setStatus({ kind: 'error', msg: errorMsg }); // Update UI with error
     } finally { // Always execute cleanup
       setSubmitting(false); // Clear loading state

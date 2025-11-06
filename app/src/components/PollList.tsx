@@ -123,14 +123,21 @@ export const PollList: React.FC<{ onSelectPoll?: (pubkey: PublicKey) => void; re
 
     } catch (e: any) {
       console.error('❌ Vote failed:', e); // Error logging
-      let errorMsg = parseAnchorError(e) || e.message || 'Failed to vote'; // Parse error
-      
+      // If error object supports getLogs, fetch logs and include in parsing
+      let errorMsg = 'Failed to vote';
+      try {
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
+        errorMsg = await parseAnchorError(e) || e.message || errorMsg;
+      } catch (pe) {
+        errorMsg = e.message || errorMsg;
+      }
+
       // Handle specific "already processed" error
-      // Provides better UX for duplicate transaction attempts
-      if (e.message && e.message.includes('already been processed')) {
+      if (e?.message && String(e.message).includes('already been processed')) {
         errorMsg = 'This transaction was already submitted. Please wait for confirmation.'; // Clear message
       }
-      
+
       setVotingStates(prev => ({ ...prev, [pollKey]: { loading: false, error: errorMsg } })); // Update error state
       return; // Exit without clearing pending state
     } finally {
@@ -171,14 +178,19 @@ export const PollList: React.FC<{ onSelectPoll?: (pubkey: PublicKey) => void; re
 
     } catch (e: any) {
       console.error('❌ Close poll failed:', e); // Error logging
-      let errorMsg = parseAnchorError(e) || e.message || 'Failed to close poll'; // Parse error
-      
-      // Handle specific "already processed" error
-      // Better UX for duplicate close attempts
-      if (e.message && e.message.includes('already been processed')) {
-        errorMsg = 'This transaction was already submitted. Please wait for confirmation.'; // Clear message
+      let errorMsg = 'Failed to close poll';
+      try {
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
+        errorMsg = await parseAnchorError(e) || e.message || errorMsg;
+      } catch (pe) {
+        errorMsg = e.message || errorMsg;
       }
-      
+
+      if (e?.message && String(e.message).includes('already been processed')) {
+        errorMsg = 'This transaction was already submitted. Please wait for confirmation.';
+      }
+
       setClosingStates(prev => ({ ...prev, [pollKey]: { loading: false, error: errorMsg } })); // Update error state
       return; // Exit without clearing pending state
     } finally {
