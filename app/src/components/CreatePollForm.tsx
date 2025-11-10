@@ -247,15 +247,7 @@ export const CreatePollForm: React.FC<{ onPollCreated?: () => void }> = ({ onPol
   };
 
   if (!wallet.connected) {
-    return (
-      <div className="p-6 bg-gray-800/80 backdrop-blur rounded shadow text-sm text-gray-300 space-y-3">
-        <div>Connect wallet to create a poll.</div>
-        <div className="text-xs text-blue-400 font-mono">
-          Debug: connected={String(wallet.connected)}, connecting={String(wallet.connecting)}, publicKey={wallet.publicKey ? 'present' : 'null'}
-        </div>
-        {wallet.connecting && <div className="text-xs text-blue-400 animate-pulse">Connecting to wallet...</div>}
-      </div>
-    );
+    return null; // Welcome message is now shown in App.tsx
   }
 
   return (

@@ -23,6 +23,36 @@ const AppContent: React.FC = () => {
           <h1 className="text-4xl md:text-5xl font-bold tracking-tight text-white">Evoter dApp</h1>
           <p className="text-gray-300">Connect your wallet to begin</p>
         </div>
+        
+        {!wallet.connected && (
+          <div className="w-full max-w-xl mx-auto bg-gray-800/80 backdrop-blur rounded-lg shadow p-6 space-y-6">
+            {/* Introductory Message */}
+            <div className="text-center space-y-4">
+              <h1 className="text-2xl font-bold text-white">Welcome to Evoter</h1>
+              <div className="text-gray-300 space-y-3">
+                <p>
+                  Evoter is a decentralized voting application built on the Solana blockchain using Anchor framework.
+                  It allows you to create polls, vote on them, and close polls securely on-chain.
+                </p>
+                <p>
+                  <strong>Why connect your wallet?</strong> To interact with the blockchain, you'll need to connect a Solana-compatible wallet
+                  (like Phantom) to sign transactions for creating polls, casting votes, and managing your polls.
+                </p>
+                <p>
+                  <strong>Deployment:</strong> The smart contract is deployed on Solana Devnet for testing and development.
+                  All transactions are recorded immutably on the blockchain.
+                </p>
+              </div>
+            </div>
+
+            {/* Wallet Connection Section */}
+            <div className="text-center space-y-3">
+              <div className="text-gray-300">Connect your wallet to get started.</div>
+              {wallet.connecting && <div className="text-xs text-blue-400 animate-pulse">Connecting to wallet...</div>}
+            </div>
+          </div>
+        )}
+        
         <WalletConnectButton />
         <div className="text-sm font-medium min-h-[1.5rem]">
           {wallet.publicKey ? (
@@ -44,12 +74,10 @@ const AppContent: React.FC = () => {
             </div>
           )}
         </div>
-        {wallet.connected && (
-          <div className="w-full mt-4 flex flex-col gap-8">
-            <CreatePollForm onPollCreated={handlePollCreated} />
-            <PollList refreshSignal={refreshSignal} />
-          </div>
-        )}
+        <div className="w-full mt-4 flex flex-col gap-8">
+          <CreatePollForm onPollCreated={handlePollCreated} />
+          {wallet.connected && <PollList refreshSignal={refreshSignal} />}
+        </div>
       </div>
     </>
   );
